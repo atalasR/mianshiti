@@ -1,6 +1,7 @@
 ## Sentinel是什么？如何使用的？
 Sentinel是流量治理组件，可以实现流量控制、流量整形、熔断降级等功能。
 在项目中通过注解通过和OpenFeign结合使用。在配置文件中配置`feign.sentinel.enabled=true`
+我们使用的是`1.8.0`以上版本。
 
 ## Sentinel和Hystrix的区别？
 - 实现理念
@@ -22,13 +23,20 @@ Sentinel是流量治理组件，可以实现流量控制、流量整形、熔断
 其中的FlowSlot，用于流量控制。Sentinel通过这个slot来实现限流功能的。
 这里的流量控制主要有两种统计类型，一种是基于统计线程数的，一种是基于统计QPS的。
 
+## Sentinel是怎么实现熔断降级的？
+出现的场景：调用链中不稳定的资源可以进行熔断。例如第三方API（支付API等）
+在Sentinel中，熔断降级是通过`BlockException`异常来实现的。当调用资源时，如果资源被熔断降级了，就会抛出`BlockException`异常。
 
 
 ## Sentinel是怎么实现集群限流的？
 
 
 ## 限流算法有哪些？
+在Sentinel中，限流实现的功能是在类`StatisticSlot`中实现的。
+具体的算法有：
+- 计数器算法
+- 滑动窗口算法
+- 漏桶算法
+- 令牌桶算法
 
 
-
-## Sentinel是怎么实现熔断降级的？
