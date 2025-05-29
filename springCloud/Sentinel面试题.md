@@ -24,12 +24,18 @@ Sentinel是流量治理组件，可以实现流量控制、流量整形、熔断
 这里的流量控制主要有两种统计类型，一种是基于统计线程数的，一种是基于统计QPS的。
 
 ## Sentinel是怎么实现熔断降级的？
-出现的场景：调用链中不稳定的资源可以进行熔断。例如第三方API（支付API等）
+出现的场景：调用链中不稳定的资源可以进行熔断。例如第三方API（支付API等）。\
 在Sentinel中，熔断降级是通过`BlockException`异常来实现的。当调用资源时，如果资源被熔断降级了，就会抛出`BlockException`异常。
 熔断降级主要是在DegradeSlot中实现的。具体实现如下：
 首先，每个Slot都有四个方法分别是：`entry`、`fireEntry`、`exit`、`fireExit`。<br/>
-`entry`表示进入这个Slot，`fireEntry`表示执行完当前slot的entry方法，一般用来执行下一个slot的entry，`exit`表示退出这个Slot，`fireExit`表示执行完当前slot的exit，一般用来调用下一个slot的exit。
+`entry`表示进入这个Slot，`fireEntry`表示执行完当前slot的entry方法，一般用来执行下一个slot的entry。
+
+`exit`表示退出这个Slot，`fireExit`表示执行完当前slot的exit，一般用来调用下一个slot的exit。
+
+
 在DegradeSlot中的`entry`方法中，有一个`performChecking`的方法，该方法会依次判断配置的断路器的tryPass方法，该方法就是判断断路器的状态是不是close的，close就直接返回**True**。如果是open的，会判断是否到了retry的时间，并将状态改为半开状态返回**True**，否则就返回**False**。
+
+
 那断路器的状态就是在在DegradeSlot中的`exit`方法中进行修改的。例如响应时间断路器（ResponseTimeCircuitBreaker）则是在请求完成后，判断响应时间是否大于设置的阈值，并累加到满响应的计数器中。如果在当慢响应的次数占到总响应的一定比例后，就会将断路器的状态改为open，来实现熔断降级的功能。
 
 ## Sentinel是怎么实现集群限流的？
