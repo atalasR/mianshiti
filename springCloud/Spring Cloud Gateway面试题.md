@@ -13,6 +13,8 @@ Java8中的断言函数，SpringCloud Gateway中的断言函数类型是Spring5.
 SpringCloud Gateway中的filter分为Gateway FilIer和Global Filter。Filter可以对请求和响应进行处理。
 
 ## Spring Cloud GateWay的工作流程是什么？
-
-
+Spring Cloud Gateway 的工作原理跟 Zuul 的差不多，最大的区别就是 Gateway 的 Filter 只有 pre 和 post 两种。
+客户端向 Spring Cloud Gateway 发出请求，如果请求与网关程序定义的路由匹配，则该请求就会被发送到网关
+Web 处理程序，此时处理程序运行特定的请求过滤器链。过滤器之间用虚线分开的原因是过滤器可能会在发送代理请求的前后执行逻辑。所有 pre 过滤器逻辑先执行，然后执行代理请求；代理请求完成后，执行 post 过滤器逻辑。
+![Gatway流程图](images/f214c5cb-d42c-46e4-a486-c13dfbce89ec.png)
 
